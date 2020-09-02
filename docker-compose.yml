@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  api:
+    build: ./
+    container_name: cowhand-node-server
+    ports:
+      - '5000:5000'
+    depends_on:
+      - mongo
+
+  mongo:
+    image: 'mongo'
+    container_name: cowhand-mongo-db
+    restart: always
+    ports:
+      - '27017:27017'
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: cowhand-mongo-express
+    ports:
+      - 8081:8081
+    #     volumes:
+    #         - ./.docker/mongo-express/docker-entrypoint.sh:/docker-entrypoint.sh
+    #     environment:
+    #         ME_CONFIG_MONGODB_ADMINUSERNAME: root
+    #         ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    depends_on:
+      - mongo

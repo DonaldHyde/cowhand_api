@@ -1,0 +1,8 @@
+# node modules
+node_modules
+# Extraneous files
+docker-compose.yml
+Dockerfile
+.dockerignore
+readme.node_modules
+notes.txt

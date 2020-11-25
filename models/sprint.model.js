@@ -8,7 +8,7 @@ const sprintSchema = new Schema(
       type: String,
       required: true,
     },
-    creator: {
+    creatorId: {
       type: String,
       required: true,
     },

@@ -4,6 +4,7 @@ const router = require('express').Router()
 const loginRoute = require('./login.route')
 const logoutRoute = require('./logout.route')
 const registerRoute = require('./register.route')
+const refreshRoute = require('./refresh.route')
 
 // const usersRoute = require('./user.route')
 
@@ -14,6 +15,7 @@ const ticketsRoute = require('./tickets.route')
 router.use('/login', loginRoute)
 router.use('/logout', logoutRoute)
 router.use('/register', registerRoute)
+router.use('/refresh_token', refreshRoute)
 
 // router.use('/users', usersRoute)
 

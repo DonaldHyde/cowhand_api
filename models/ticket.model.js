@@ -28,7 +28,7 @@ const ticketSchema = new Schema(
       required: true,
     },
     sprintId: String,
-    createdBy: {
+    creatorId: {
       type: String,
       required: true,
     },

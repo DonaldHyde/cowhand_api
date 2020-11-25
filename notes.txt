@@ -1,4 +1,20 @@
 
+When I update a project:
+ (There currently is no way to edit a project)
+
+When I update a sprint:
+ - No major issues here, a ticket addition or removal is a ticket change
+
+When I update a ticket:
+ - The sprint view may need to update
+
+If a ticket's project and sprint are ever out of sync, should it
+ - do nothing,
+ - clear the sprint property,
+ - change to the appropriate project based on the sprint
+
+Can a ticket change projects? That doesn't make any sense.
+
 API
 
 POST  login
@@ -378,3 +394,8 @@ The REST API to the example app is described below.
     Date: Thu, 24 Feb 2011 12:36:33 GMT
     Status: 204 No Content
     Connection: close
+
+
+//////
+
+await (await fetch('uinames.com/api/?ext')).json()

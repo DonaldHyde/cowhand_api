@@ -1,15 +1,13 @@
 const router = require('express').Router()
 const { confirmNoActiveSession } = require('../middleware/auth.middleware')
 const argon2 = require('argon2')
+const jwt = require('jsonwebtoken')
+const { SESH_SECRET } = require('../env/env')
 
 const User = require('../models/user.model')
 
-// router.get('/', (req, res) => {
-//   res.send('register page')
-// })
-
-router.post('/', confirmNoActiveSession, async (req, res) => {
-  const { username, email, password } = req.body
+router.post('/', async (req, res) => {
+  const { username, email, password, remember } = req.body
 
   const user = await User.findOne({ email })
 
@@ -18,19 +16,21 @@ router.post('/', confirmNoActiveSession, async (req, res) => {
 
     const hashedPassword = await argon2.hash(password)
 
+    // TODO: user setting for 'remember me' to set a long refresh token expiration
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
+      remember,
     })
 
     await newUser.save()
 
-    req.session.userId = newUser.id
+    const token = jwt.sign({ userId: newUser.id }, SESH_SECRET)
 
     return res.json({
       message: 'Registration success',
-      sessionActive: true,
+      token,
     })
   }
 

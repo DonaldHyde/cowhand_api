@@ -1,53 +1,51 @@
 const express = require('express')
 const session = require('express-session')
+const MongoStore = require('connect-mongo')(session)
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const { initializeDatabase } = require('./services/database.service')
-
-const User = require('./models/user.model')
-
-const app = express()
+const { parseToken } = require('./middleware/auth.middleware')
 
 const {
   PORT,
+  SIGNED_COOKIE_SECRET,
   NODE_ENV,
-  SESH_NAME,
-  SESH_SECRET,
-  SESH_LENGTH,
+  REFRESH_LENGTH_REMEMBER,
+  REFRESH_LENGTH,
+  COOKIE_NAME,
 } = require('./env/env')
 
-const IN_PROD = NODE_ENV === 'production'
+const app = express()
+
+const db = initializeDatabase()
+
+// TODO: handle http (dev) vs. https (prod)
+
+app.use(cors())
 
 app.use(
   session({
-    cookie: {
-      maxAge: SESH_LENGTH,
-      secure: IN_PROD,
-      sameSite: true,
-    },
-    secret: SESH_SECRET,
-    name: SESH_NAME,
+    name: COOKIE_NAME,
+    secret: SIGNED_COOKIE_SECRET,
     resave: false,
+    secure: false,
     saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: db }),
+    sameSite: false,
+    cookie: {
+      secure: NODE_ENV === 'production',
+      maxAge: REFRESH_LENGTH_REMEMBER,
+      sameSite: false,
+      // Date.now() + (user.remember ? REFRESH_LENGTH_REMEMBER : REFRESH_LENGTH),
+    },
   })
 )
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-initializeDatabase()
-
-// Stash user in locals
-app.use(async function (req, res, next) {
-  const userId = req.session.userId
-
-  if (userId) {
-    const user = await User.findById(userId)
-    res.locals.user = user
-  }
-
-  next()
-})
+app.use(parseToken)
 
 const apiRoutes = require('./routes/router-index')
 app.use('/api/v1', apiRoutes)

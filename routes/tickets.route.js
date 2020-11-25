@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { confirmActiveSession } = require('../middleware/auth.middleware')
+const { requireToken } = require('../middleware/auth.middleware')
 
 const Ticket = require('../models/ticket.model')
 // const Activity = require('../models/ticket.activity.model.js')
@@ -13,7 +13,7 @@ const FILTER = {
   sprintId: 'sprintId',
 }
 
-router.get('/', confirmActiveSession, async (req, res) => {
+router.get('/', requireToken, async (req, res) => {
   // if (!FILTER[req.body.filter])
   //   return res.json({ tickets: [await Ticket.find()] })
   // if (!req.body[req.body.filter])
@@ -30,7 +30,7 @@ router.get('/', confirmActiveSession, async (req, res) => {
     })
 })
 
-router.get('/:ticketId', confirmActiveSession, async (req, res) => {
+router.get('/:ticketId', requireToken, async (req, res) => {
   Ticket.findById(req.params.ticketId)
     .then((ticket) => {
       if (ticket) return res.json({ ticket })
@@ -47,7 +47,7 @@ router.get('/:ticketId', confirmActiveSession, async (req, res) => {
 })
 
 // TODO: validate sprint to its project
-router.post('/create', confirmActiveSession, async (req, res) => {
+router.post('/create', requireToken, async (req, res) => {
   if (!Project.findById(req.body.projectId))
     return res.status(400).json({ message: 'Invalid project id' })
   if (!req.body.title)
@@ -57,7 +57,7 @@ router.post('/create', confirmActiveSession, async (req, res) => {
   const newTicket = new Ticket({
     title: req.body.title,
     projectId: req.body.projectId,
-    createdBy: req.session.userId,
+    createdBy: req.userId,
     ...req.body,
   })
 

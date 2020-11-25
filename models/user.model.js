@@ -23,10 +23,15 @@ const userSchema = new Schema(
       trim: true,
       minlength: 8,
     },
+    remember: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     role: {
       type: String,
       default: 'read',
-      enum: ['admin', 'write', 'read'],
+      enum: ['super_admin', 'team_admin', 'write', 'read'],
     },
   },
   {
